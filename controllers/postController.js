@@ -143,7 +143,6 @@ module.exports.createPost = async (req, res) => {
 // update post 
 module.exports.updatePost =async (req, res) => {
   const { id } = req.params;
-  validateMongoDbId(id);
 
   try {
       const updatedPost = await Post.findByIdAndUpdate(
@@ -162,7 +161,6 @@ module.exports.updatePost =async (req, res) => {
 //delete post 
 module.exports.deletePost = async (req, res) => {
   const { id } = req.params;
-  validateMongoDbId(id);
 
   try {
       const deletedPost = await Post.findByIdAndDelete(id);
@@ -273,22 +271,26 @@ module.exports.getTotalPosts = async (req, res) => {
 };
 
 // Appriciate/like a Particular Post
+
+
+
+
 module.exports.likePost = async (req, res) => {
   const postId = req.params.id;
-  const { userId, type } = req.body;
+  const { user, type } = req.body;
+  console.log(user);
   try {
     let post = await Post.findById(postId).populate("userId", "--password");
     post.appreciate = post.appreciate || [];
     post.improve = post.improve || [];
     let flag = type == "appreciate";
+    console.log(post);
     if (flag) {
-      post.appreciate.push(userId);
+      post.appreciate.push(user._id);
     } else {
-      post.improve.push(userId);
+      post.improve.push(user._id);
     }
     await post.save();
-
-  
     return res.status(200).json(post);
   } catch (e) {
     return res.status(500).json({ msg: "Internal server error" });
@@ -300,7 +302,7 @@ module.exports.unlikePost = async (req, res) => {
   try {
     console.log("unlikePost running...");
     const postId = req.params.id;
-    const userId = req.body.userId;
+    const user = req.body.user;
     const type = req.body.type;
 
     var post;
@@ -308,7 +310,7 @@ module.exports.unlikePost = async (req, res) => {
       post = await Post.findByIdAndUpdate(
         postId,
         {
-          $pull: { appreciate: userId },
+          $pull: { appreciate: user._id },
         },
         { new: true }
       );
@@ -317,7 +319,7 @@ module.exports.unlikePost = async (req, res) => {
       post = await Post.findByIdAndUpdate(
         postId,
         {
-          $pull: { improve: userId },
+          $pull: { improve: user._id },
         },
         { new: true }
       );

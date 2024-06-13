@@ -33,14 +33,16 @@ router.post(
   uploadPhoto.array('images', 5), 
   createPost
 );
+router.post("/postComment", auth, postComment);
+
 router.get("/totalPosts/:id", auth, getTotalPosts);
 
+router.get("/post/allTypes", auth ,getPostAllType);
 
 // Appriciate Post using ID
 router.post("/postAppriciate/:id", auth, likePost);
 // UnAppriciate Post using ID
 router.post("/postunAppriciate/:id", auth, unlikePost);
-router.post("/postComment", auth, postComment);
 // Delete specific comment from the post
 router.post("/deleteComment", deleteComment);
 // Delete nested comments
@@ -53,7 +55,6 @@ router.get("/getComments/:id", auth, getPostComments);
 router.get("/posts/:userId/:page", auth,  fetchPosts);
 // Fetch Post with post ID(Individual Post)
 router.get("/post/:id", auth ,fetchPost);
-router.get("/post/allTypes", auth ,getPostAllType);
 // Like or Unlike a comment
 router.post('/like/:commentId', likeComment);
 router.post('/modify/:commentId', modifyComment);
